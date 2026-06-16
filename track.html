@@ -190,8 +190,24 @@
     } catch(e) {
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Search';
-      showToast('Could not connect to the Ministry. Check Firebase config.');
-      console.error(e);
+
+      let msg = 'Error: ' + (e?.message || e?.code || 'Unknown error');
+      if (e?.code === 'permission-denied')   msg = '❌ Firestore rules are blocking this — check your security rules.';
+      if (e?.code === 'unavailable')         msg = '❌ No internet connection.';
+      if (e?.message?.includes('indexes'))   msg = '❌ Firestore index needed — check the browser console for a link to create it.';
+
+      showToast(msg);
+      console.error('Firebase error:', e?.code, e?.message, e);
+
+      result.innerHTML = `<div class="card" style="margin-top:1.5rem">
+        <div class="not-found">
+          <i class="fa-solid fa-triangle-exclamation" style="color:#c44;opacity:1"></i>
+          <h3>Connection Error</h3>
+          <p style="color:#c44;font-size:0.8rem;font-family:monospace">${e?.code || 'unknown'}: ${e?.message || ''}</p>
+          <p>Open browser DevTools (F12) → Console tab for the full error.</p>
+        </div>
+      </div>`;
+      result.classList.add('show');
     }
   };
 
