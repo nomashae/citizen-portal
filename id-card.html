@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Citizen ID Card — Nomashae</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <!-- QR code library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- html2canvas for download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    /* ── ID CARD ── */
+    .card-scene { display: flex; justify-content: center; margin: 2rem 0; perspective: 1200px; }
+    .id-card-wrap { width: 360px; position: relative; }
+    .id-card-wrap:hover .id-card { transform: rotateY(3deg) rotateX(-2deg); }
+
+    .id-card {
+      width: 360px; border-radius: 18px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1);
+      position: relative; transition: transform 0.4s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .id-card-header {
+      padding: 1.2rem 1.4rem 0.8rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .id-card-nation { font-size: 0.58rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; opacity: 0.85; }
+    .id-card-logo   { font-size: 0.95rem; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; }
+
+    .id-card-stripe { height: 3px; width: 100%; }
+
+    .id-card-body { padding: 1.2rem 1.4rem; }
+    .id-card-label { font-size: 0.48rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; opacity: 0.6; display: block; margin-bottom: 0.2rem; }
+    .id-card-value { font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 0.9rem; }
+    .id-card-value.big { font-size: 1.2rem; font-weight: 700; letter-spacing: 1px; }
+    .id-card-row { display: flex; gap: 1.4rem; margin-bottom: 0.9rem; }
+    .id-card-row > div { flex: 1; }
+
+    .id-card-track {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 4px;
+      padding: 0.5rem 0.8rem; border-radius: 8px;
+      display: inline-block; margin-bottom: 0.9rem;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .id-card-footer {
+      padding: 0.8rem 1.4rem 1.2rem;
+      display: flex; justify-content: space-between; align-items: flex-end;
+    }
+    .id-card-footer .qr-box {
+      width: 72px; height: 72px; border-radius: 8px;
+      overflow: hidden; background: #fff; padding: 4px;
+    }
+    .id-card-footer .qr-box canvas,
+    .id-card-footer .qr-box img { width: 100%; height: 100%; }
+    .id-card-footer-text { font-size: 0.55rem; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; text-align: right; }
+    .id-card-footer-seal { font-size: 1.4rem; opacity: 0.25; }
+
+    /* nation themes for card */
+    .card-fire   { background: linear-gradient(135deg, #2a1005, #5a1a00); color: #ffd4b0; }
+    .card-fire   .id-card-stripe { background: linear-gradient(90deg, #C4622D, #ff8c42, #9e4420); }
+    .card-fire   .id-card-track  { color: #ffb07a; }
+
+    .card-water  { background: linear-gradient(135deg, #001520, #002a3a); color: #b0e4e4; }
+    .card-water  .id-card-stripe { background: linear-gradient(90deg, #3A8F8F, #7fd0d0, #2a6e6e); }
+    .card-water  .id-card-track  { color: #7fd0d0; }
+
+    .card-air    { background: linear-gradient(135deg, #0a1a28, #0e2a40); color: #c0dff0; }
+    .card-air    .id-card-stripe { background: linear-gradient(90deg, #5B9BBF, #a0d0f0, #3a7a9e); }
+    .card-air    .id-card-track  { color: #a0d0f0; }
+
+    .card-earth  { background: linear-gradient(135deg, #0a1a0e, #102818); color: #b8d8c0; }
+    .card-earth  .id-card-stripe { background: linear-gradient(90deg, #4A7C59, #8abd9a, #2e5c3e); }
+    .card-earth  .id-card-track  { color: #8abd9a; }
+
+    .card-neutral { background: linear-gradient(135deg, #18181a, #2a2a2e); color: #d0d0d8; }
+    .card-neutral .id-card-stripe { background: linear-gradient(90deg, #666, #aaa, #444); }
+    .card-neutral .id-card-track  { color: #aaa; }
+
+    /* Shimmer effect */
+    .id-card::after {
+      content: ''; position: absolute; inset: 0; border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(255,255,255,0.03) 100%);
+      pointer-events: none;
+    }
+
+    /* ── ACTIONS ── */
+    .card-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+
+    /* ── NOT APPROVED ── */
+    .not-approved {
+      text-align: center; padding: 3.5rem 2rem;
+    }
+    .not-approved i { font-size: 2.5rem; color: var(--accent); opacity: 0.35; display: block; margin-bottom: 1rem; }
+    .not-approved h3 { font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.4rem; }
+    .not-approved p  { font-size: 0.82rem; color: var(--ink2); font-weight: 300; max-width: 340px; margin: 0 auto 1.5rem; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="nav-brand" href="index.html">Nomashae</a>
+    <span class="el-badge" id="el-badge">Earth</span>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="citizenship.html">Apply</a>
+    <a class="nav-btn" href="track.html">Track</a>
+    <button class="nav-btn" id="dark-btn">Dark</button>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="announce"><span>Citizen ID cards are issued only to approved citizens · Download and keep your card safe &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+<div class="mobile-nav-drawer" id="mobile-drawer">
+  <button class="drawer-close" id="drawer-close">✕</button>
+  <a class="nav-btn" href="index.html">Home</a>
+  <a class="nav-btn" href="track.html">Track Application</a>
+  <button class="nav-btn" id="dark-btn-mobile">Dark</button>
+</div>
+
+<div class="page-hero">
+  <div class="hero-icon"><i class="fa-solid fa-id-card"></i></div>
+  <span class="hero-eyebrow">Ministry of Internal Affairs</span>
+  <h1 class="hero-title">Citizen ID Card</h1>
+  <p class="hero-sub">View and download your official Nomashae Citizen ID card after your application has been approved.</p>
+</div>
+
+<div class="page-wrap">
+
+  <!-- LOOKUP (if no track param in URL) -->
+  <div class="card fade" id="lookup-card">
+    <p class="section-label"><i class="fa-solid fa-magnifying-glass" style="margin-right:0.4rem"></i>Enter Tracking ID</p>
+    <div class="track-search" style="display:flex;gap:0.8rem;flex-wrap:wrap;align-items:flex-end">
+      <div class="form-field" style="flex:1;min-width:200px;margin-bottom:0">
+        <label>Tracking ID</label>
+        <input type="text" id="inp-track" placeholder="NM-XXXX-XXXX" maxlength="12"
+               oninput="formatTrackInput(this)"
+               style="font-size:1rem;letter-spacing:3px;text-transform:uppercase"/>
+      </div>
+      <button class="btn-primary" onclick="loadCard()">
+        <i class="fa-solid fa-id-card"></i> Load Card
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT (filled by JS) -->
+  <div id="card-result"></div>
+
+</div>
+
+<footer><p>© 2026 Nomashae · Ministry of Internal Affairs</p></footer>
+<div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-msg"></span></div>
+<button id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-angles-up" style="color:var(--ink)"></i></button>
+
+<script src="firebase-config.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  const app=initializeApp(FIREBASE_CONFIG); const db=getFirestore(app);
+  window._db=db; window._col=collection; window._q=query; window._where=where; window._getDocs=getDocs;
+</script>
+
+<script>
+  const nationMeta = {
+    fire:    { label:'Fire Nation',    icon:'🔥', cardClass:'card-fire',    accentHex:'#C4622D' },
+    water:   { label:'Water Tribe',    icon:'💧', cardClass:'card-water',   accentHex:'#3A8F8F' },
+    air:     { label:'Air Nomads',     icon:'🌀', cardClass:'card-air',     accentHex:'#5B9BBF' },
+    earth:   { label:'Earth Kingdom',  icon:'🌍', cardClass:'card-earth',   accentHex:'#4A7C59' },
+    neutral: { label:'Republic City',  icon:'⚖️', cardClass:'card-neutral', accentHex:'#888888' },
+  };
+
+  function formatTrackInput(el) {
+    let v = el.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+    let out = 'NM-';
+    v = v.replace(/^NM/,'');
+    if (v.length<=4) out+=v; else out+=v.slice(0,4)+'-'+v.slice(4,8);
+    el.value=out;
+  }
+
+  // Check URL param on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const track  = params.get('track');
+    if (track) {
+      document.getElementById('inp-track').value = track;
+      setTimeout(loadCard, 600);
+    }
+  });
+
+  window.loadCard = async function() {
+    const raw = document.getElementById('inp-track').value.trim().toUpperCase();
+    if (raw.length < 11) { showToast('Please enter a full Tracking ID.'); return; }
+
+    document.getElementById('card-result').innerHTML = `<div style="text-align:center;padding:3rem"><div class="spinner"></div></div>`;
+
+    try {
+      const snap = await window._getDocs(
+        window._q(window._col(window._db,'applications'), window._where('trackId','==',raw))
+      );
+
+      if (snap.empty) {
+        document.getElementById('card-result').innerHTML = `<div class="card" style="margin-top:1.5rem"><div class="not-approved">
+          <i class="fa-solid fa-circle-xmark"></i>
+          <h3>Not Found</h3>
+          <p>No application found with that Tracking ID.</p>
+          <a class="btn-ghost" href="citizenship.html"><i class="fa-solid fa-scroll"></i> Apply for Citizenship</a>
+        </div></div>`;
+        return;
+      }
+
+      const d = snap.docs[0].data();
+
+      if (d.status !== 'approved') {
+        const statusLabel = { pending:'Pending Review', rejected:'Rejected', waitlisted:'Waitlisted' };
+        document.getElementById('card-result').innerHTML = `<div class="card" style="margin-top:1.5rem"><div class="not-approved">
+          <i class="fa-solid fa-hourglass-half"></i>
+          <h3>Application ${statusLabel[d.status] || d.status}</h3>
+          <p>Your Citizen ID card is only available after your application has been <strong>approved</strong> by the Ministry.</p>
+          <a class="btn-ghost" href="track.html?id=${d.trackId}"><i class="fa-solid fa-magnifying-glass"></i> Check Status</a>
+        </div></div>`;
+        return;
+      }
+
+      renderCard(d);
+    } catch(e) {
+      document.getElementById('card-result').innerHTML = '';
+      showToast('Error connecting to Ministry. Check Firebase config.');
+      console.error(e);
+    }
+  };
+
+  function renderCard(d) {
+    const meta = nationMeta[d.nation] || nationMeta.neutral;
+    const approvedDate = d.approvedAt?.toDate
+      ? d.approvedAt.toDate().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+      : new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+
+    // Citizen number: fixed from trackId seed
+    const citizenNum = 'C-' + d.trackId.replace('NM-','').replace('-','');
+
+    document.getElementById('card-result').innerHTML = `
+      <div style="margin-top:2rem">
+        <div class="card-scene">
+          <div class="id-card-wrap">
+            <div class="id-card ${meta.cardClass}" id="id-card-el">
+              <div class="id-card-header">
+                <div>
+                  <div class="id-card-nation">${meta.icon} ${meta.label}</div>
+                  <div class="id-card-logo">Nomashae</div>
+                </div>
+                <div style="text-align:right;opacity:0.4;font-size:1.6rem">${meta.icon}</div>
+              </div>
+              <div class="id-card-stripe"></div>
+              <div class="id-card-body">
+                <div class="id-card-track">${d.trackId}</div>
+                <span class="id-card-label">Full Name</span>
+                <span class="id-card-value big">${d.firstname}${d.lastname ? ' '+d.lastname : ''}</span>
+                <div class="id-card-row">
+                  <div>
+                    <span class="id-card-label">Username</span>
+                    <span class="id-card-value">@${d.username}</span>
+                  </div>
+                  <div>
+                    <span class="id-card-label">Citizen No.</span>
+                    <span class="id-card-value">${citizenNum}</span>
+                  </div>
+                </div>
+                <div class="id-card-row">
+                  <div>
+                    <span class="id-card-label">Region</span>
+                    <span class="id-card-value" style="font-size:0.78rem">${d.region}</span>
+                  </div>
+                  <div>
+                    <span class="id-card-label">Issued</span>
+                    <span class="id-card-value">${approvedDate}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="id-card-footer">
+                <div>
+                  <div class="id-card-footer-seal">⚖</div>
+                  <div class="id-card-footer-text">Republic of<br>Nomashae</div>
+                </div>
+                <div class="qr-box" id="qr-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn-primary" onclick="downloadCard()"><i class="fa-solid fa-download"></i> Download Card</button>
+          <button class="btn-ghost" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+        </div>
+
+        <div class="card notice" style="margin:0 auto;max-width:500px">
+          <i class="fa-solid fa-lock"></i>
+          <p>Your <strong>secret citizen codes</strong> are securely stored in the Ministry's records. They were assigned at application and are never displayed publicly — only accessible to Ministry officials for identity verification.</p>
+        </div>
+      </div>`;
+
+    // Generate QR code
+    const profileUrl = window.location.origin + window.location.pathname.replace('id-card.html','') + 'track.html?id=' + d.trackId;
+    new QRCode(document.getElementById('qr-container'), {
+      text: profileUrl,
+      width: 64, height: 64,
+      colorDark: '#000000', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  }
+
+  window.downloadCard = function() {
+    const el = document.getElementById('id-card-el');
+    html2canvas(el, { scale: 3, useCORS: true, backgroundColor: null }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'nomashae-citizen-id.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  };
+
+  function showToast(msg) {
+    const t=document.getElementById('toast');
+    document.getElementById('toast-msg').textContent=msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3500);
+  }
+
+  // Dark
+  let isDark=false; try{isDark=localStorage.getItem('nmDark')==='true';}catch(e){}
+  function applyDark(){document.body.setAttribute('data-theme',isDark?'dark':'light');document.querySelectorAll('#dark-btn,#dark-btn-mobile').forEach(b=>{b.textContent=isDark?'Light':'Dark';b.classList.toggle('active',isDark);});}
+  document.querySelectorAll('#dark-btn,#dark-btn-mobile').forEach(b=>b.addEventListener('click',()=>{isDark=!isDark;try{localStorage.setItem('nmDark',isDark);}catch(e){}applyDark();}));
+  applyDark();
+
+  // Element
+  function getEl(){const h=new Date().getHours();return h>=6&&h<12?'air':h>=12&&h<18?'water':h>=18&&h<22?'fire':'earth';}
+  const el=getEl();document.body.setAttribute('data-element',el);
+  document.getElementById('el-badge').textContent={air:'Air',water:'Water',fire:'Fire',earth:'Earth'}[el];
+
+  // Hamburger
+  document.getElementById('hamburger').addEventListener('click',()=>{document.getElementById('mobile-drawer').classList.toggle('open');document.getElementById('hamburger').classList.toggle('open');});
+  document.getElementById('drawer-close').addEventListener('click',()=>{document.getElementById('mobile-drawer').classList.remove('open');document.getElementById('hamburger').classList.remove('open');});
+
+  // Scroll
+  const obs=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add('in')),{threshold:0.1});
+  document.querySelectorAll('.fade').forEach(el=>obs.observe(el));
+  window.addEventListener('scroll',()=>document.getElementById('topBtn').classList.toggle('visible',window.scrollY>400));
+</script>
+</body>
+</html>

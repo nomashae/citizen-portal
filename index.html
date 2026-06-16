@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Republic of Nomashae — Citizens Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── HOME HERO ── */
+    .home-hero {
+      min-height: calc(100vh - 102px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 4rem 2rem 5rem;
+      position: relative; overflow: hidden;
+    }
+    .home-hero::before {
+      content: ''; position: absolute;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-title {
+      font-size: clamp(2.8rem, 9vw, 6.5rem); font-weight: 700;
+      letter-spacing: 8px; text-transform: uppercase; color: var(--ink);
+      line-height: 1; margin-bottom: 0.6rem; position: relative; z-index: 1;
+    }
+    .hero-title span { color: var(--accent); }
+    .hero-motto {
+      font-size: 0.82rem; font-weight: 400; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--ink2); margin-bottom: 2.5rem;
+      position: relative; z-index: 1;
+    }
+    .hero-ctas { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
+
+    /* ── NEWS FEED ── */
+    .section-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 2rem;
+    }
+    .section-head h2 {
+      font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--ink);
+    }
+    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 1.4rem; }
+    .news-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.8rem; box-shadow: var(--shadow);
+      transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+      cursor: default; display: flex; flex-direction: column; gap: 0.7rem;
+    }
+    .news-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.11); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+    .news-tag {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--accent); display: flex; align-items: center; gap: 0.4rem;
+    }
+    .news-title { font-size: 1.05rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+    .news-body { font-size: 0.84rem; color: var(--ink2); font-weight: 300; line-height: 1.75; flex: 1; }
+    .news-meta { font-size: 0.7rem; color: var(--ink2); opacity: 0.7; display: flex; align-items: center; gap: 0.5rem; }
+    .news-empty {
+      text-align: center; padding: 4rem 2rem; color: var(--ink2);
+      border: 1px dashed var(--border); border-radius: var(--radius);
+    }
+    .news-empty i { font-size: 2rem; margin-bottom: 1rem; display: block; opacity: 0.4; color: var(--accent); }
+    .news-empty p { font-size: 0.88rem; font-weight: 300; }
+
+    /* ── STAT STRIP ── */
+    .stat-strip {
+      display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+      gap: 1rem; margin: 3rem 0;
+    }
+    .stat-tile {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.6rem; text-align: center; box-shadow: var(--shadow);
+    }
+    .stat-tile .num { font-size: 2.2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+    .stat-tile .lbl { font-size: 0.65rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--ink2); margin-top: 0.4rem; }
+    .stat-tile i { font-size: 1.2rem; color: var(--accent); margin-bottom: 0.5rem; display: block; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a class="nav-brand" href="index.html">Nomashae</a>
+    <span class="el-badge" id="el-badge">Earth</span>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="citizenship.html">Apply for Citizenship</a>
+    <a class="nav-btn" href="track.html">Track Application</a>
+    <button class="nav-btn" id="dark-btn">Dark</button>
+    <button class="nav-btn always-show" id="lang-btn">EN</button>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="announce">
+  <span id="ticker-text">Welcome to the Republic of Nomashae · Apply for citizenship today · Four Elements · One Nomashae · News and Decrees posted by the Ministry · Balance, Peace, Harmony &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-nav-drawer" id="mobile-drawer">
+  <button class="drawer-close" id="drawer-close">✕</button>
+  <a class="nav-btn" href="citizenship.html">Apply for Citizenship</a>
+  <a class="nav-btn" href="track.html">Track Application</a>
+  <button class="nav-btn" id="dark-btn-mobile">Dark</button>
+  <button class="nav-btn" id="lang-btn-mobile">EN</button>
+</div>
+
+<!-- HERO -->
+<section class="home-hero">
+  <h1 class="hero-title fade">Noma<span>shae</span></h1>
+  <p class="hero-motto fade">Four Elements · One Nomashae</p>
+  <div class="hero-ctas fade">
+    <a class="btn-primary" href="citizenship.html"><i class="fa-solid fa-scroll"></i> Apply for Citizenship</a>
+    <a class="btn-ghost" href="track.html"><i class="fa-solid fa-magnifying-glass"></i> Track Application</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="page-wrap-wide">
+  <div class="stat-strip fade">
+    <div class="stat-tile">
+      <i class="fa-solid fa-users"></i>
+      <div class="num" id="stat-citizens">—</div>
+      <div class="lbl">Citizens</div>
+    </div>
+    <div class="stat-tile">
+      <i class="fa-solid fa-file-pen"></i>
+      <div class="num" id="stat-pending">—</div>
+      <div class="lbl">Pending Applications</div>
+    </div>
+    <div class="stat-tile">
+      <i class="fa-solid fa-earth-americas"></i>
+      <div class="num" id="stat-regions">16</div>
+      <div class="lbl">Regions</div>
+    </div>
+    <div class="stat-tile">
+      <i class="fa-solid fa-calendar-check"></i>
+      <div class="num">2025</div>
+      <div class="lbl">Founded</div>
+    </div>
+  </div>
+
+  <!-- NEWS -->
+  <div class="section-head fade">
+    <h2><i class="fa-solid fa-newspaper" style="color:var(--accent);margin-right:0.6rem"></i>Latest News & Decrees</h2>
+  </div>
+  <div class="news-grid fade" id="news-grid">
+    <div class="news-empty">
+      <i class="fa-solid fa-satellite-dish"></i>
+      <p>Loading latest news from the Ministry…</p>
+    </div>
+  </div>
+</div>
+
+<footer><p>© 2026 Nomashae · Citizens Portal · Ministry of Internal Affairs</p></footer>
+<button id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-angles-up" style="color:var(--ink)"></i></button>
+<div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-msg"></span></div>
+
+<!-- FIREBASE -->
+<script src="firebase-config.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const app = initializeApp(FIREBASE_CONFIG);
+  const db  = getFirestore(app);
+
+  // Load stats
+  async function loadStats() {
+    try {
+      const cSnap = await getDocs(query(collection(db,'citizens'), where('status','==','approved')));
+      document.getElementById('stat-citizens').textContent = cSnap.size;
+      const pSnap = await getDocs(query(collection(db,'applications'), where('status','==','pending')));
+      document.getElementById('stat-pending').textContent = pSnap.size;
+    } catch(e) { console.warn('Stats unavailable:', e); }
+  }
+
+  // Load news
+  async function loadNews() {
+    const grid = document.getElementById('news-grid');
+    try {
+      const snap = await getDocs(query(collection(db,'news'), orderBy('createdAt','desc'), limit(9)));
+      if (snap.empty) {
+        grid.innerHTML = `<div class="news-empty"><i class="fa-solid fa-satellite-dish"></i><p>No news posted yet. Check back soon.</p></div>`;
+        return;
+      }
+      grid.innerHTML = '';
+      snap.forEach(doc => {
+        const d = doc.data();
+        const date = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : 'Recent';
+        const card = document.createElement('div');
+        card.className = 'news-card';
+        card.innerHTML = `
+          <div class="news-tag"><i class="fa-solid fa-circle-dot"></i>${d.category || 'Announcement'}</div>
+          <div class="news-title">${d.title}</div>
+          <div class="news-body">${d.body}</div>
+          <div class="news-meta"><i class="fa-regular fa-calendar"></i>${date} · ${d.author || 'Ministry of Nomashae'}</div>`;
+        grid.appendChild(card);
+      });
+      // Update ticker
+      const titles = [];
+      snap.forEach(doc => titles.push(doc.data().title));
+      if (titles.length) {
+        document.getElementById('ticker-text').textContent = '📰 ' + titles.join(' · ') + '   ·   ';
+      }
+    } catch(e) {
+      grid.innerHTML = `<div class="news-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>Could not load news. Check your Firebase config.</p></div>`;
+    }
+  }
+
+  loadStats();
+  loadNews();
+</script>
+
+<script>
+  // Element theming
+  const elMap = {6:'air',12:'water',18:'fire',22:'earth'};
+  function getElement() {
+    const h = new Date().getHours();
+    if (h>=6 && h<12) return 'air';
+    if (h>=12 && h<18) return 'water';
+    if (h>=18 && h<22) return 'fire';
+    return 'earth';
+  }
+  const currentEl = getElement();
+  document.body.setAttribute('data-element', currentEl);
+  document.getElementById('el-badge').textContent = {air:'Air',water:'Water',fire:'Fire',earth:'Earth'}[currentEl];
+
+  // Dark mode
+  let isDark = false;
+  try { isDark = localStorage.getItem('nmDark') === 'true'; } catch(e){}
+  function applyDark() {
+    document.body.setAttribute('data-theme', isDark ? 'dark':'light');
+    document.querySelectorAll('#dark-btn,#dark-btn-mobile').forEach(b => {
+      b.textContent = isDark ? 'Light':'Dark';
+      b.classList.toggle('active', isDark);
+    });
+  }
+  document.querySelectorAll('#dark-btn,#dark-btn-mobile').forEach(b => b.addEventListener('click', () => {
+    isDark = !isDark; try { localStorage.setItem('nmDark', isDark); }catch(e){} applyDark();
+  }));
+  applyDark();
+
+  // Scroll fade
+  const obs = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting && e.target.classList.add('in')), {threshold:0.1});
+  document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+
+  // Top button
+  const topBtn = document.getElementById('topBtn');
+  const footer = document.querySelector('footer');
+  window.addEventListener('scroll', () => {
+    topBtn.classList.toggle('visible', footer.getBoundingClientRect().top <= window.innerHeight);
+  });
+
+  // Hamburger
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('mobile-drawer');
+  hamburger.addEventListener('click', () => { drawer.classList.toggle('open'); hamburger.classList.toggle('open'); });
+  document.getElementById('drawer-close').addEventListener('click', () => { drawer.classList.remove('open'); hamburger.classList.remove('open'); });
+</script>
+</body>
+</html>

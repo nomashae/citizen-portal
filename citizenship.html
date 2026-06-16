@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Apply for Citizenship — Nomashae</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .progress-bar {
+      display: flex; gap: 0; margin-bottom: 2.5rem; position: relative;
+    }
+    .progress-bar::before {
+      content: ''; position: absolute; top: 18px; left: 0; right: 0; height: 2px;
+      background: var(--border); z-index: 0;
+    }
+    .step-node {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      position: relative; z-index: 1;
+    }
+    .step-circle {
+      width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--border);
+      background: var(--bg); display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; color: var(--ink2);
+      transition: all 0.3s;
+    }
+    .step-node.active .step-circle  { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .step-node.done   .step-circle  { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, var(--bg)); color: var(--accent); }
+    .step-lbl { font-size: 0.6rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--ink2); text-align: center; }
+    .step-node.active .step-lbl { color: var(--accent); }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+
+    .form-title {
+      font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; color: var(--ink);
+      margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.6rem;
+    }
+    .form-title i { color: var(--accent); }
+    .form-subtitle { font-size: 0.8rem; color: var(--ink2); font-weight: 300; margin-bottom: 1.8rem; }
+
+    .step-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+
+    /* inline validation */
+    .form-field.error input,
+    .form-field.error select,
+    .form-field.error textarea { border-color: #c44; }
+    .field-err { font-size: 0.7rem; color: #c44; margin-top: 0.35rem; display: none; }
+    .form-field.error .field-err { display: block; }
+
+    /* success screen */
+    .success-screen {
+      text-align: center; padding: 4rem 2rem; display: none; flex-direction: column; align-items: center; gap: 1.2rem;
+    }
+    .success-screen.show { display: flex; }
+    .success-icon {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+    .success-icon i { font-size: 2rem; color: var(--accent); }
+    .success-screen h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: 1px; color: var(--ink); }
+    .success-screen p  { font-size: 0.88rem; color: var(--ink2); font-weight: 300; max-width: 420px; line-height: 1.8; }
+    .tracker-id {
+      background: var(--bg2); border: 1.5px dashed var(--border); border-radius: 12px;
+      padding: 1.2rem 2rem; font-size: 1.4rem; font-weight: 700; letter-spacing: 6px;
+      color: var(--accent); cursor: pointer; transition: border-color 0.2s;
+    }
+    .tracker-id:hover { border-color: var(--accent); }
+    .tracker-hint { font-size: 0.72rem; color: var(--ink2); display: flex; gap: 0.4rem; align-items: center; }
+
+    /* region nation colors */
+    .nation-fire  .region-dot { background: linear-gradient(135deg,#C4622D,#9e4420); border: none; }
+    .nation-water .region-dot { background: linear-gradient(135deg,#3A8F8F,#2a6e6e); border: none; }
+    .nation-air   .region-dot { background: linear-gradient(135deg,#5B9BBF,#3a7a9e); border: none; }
+    .nation-earth .region-dot { background: linear-gradient(135deg,#4A7C59,#2e5c3e); border: none; }
+
+    .nation-header {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--ink2); padding: 0.5rem 0 0.4rem; margin-top: 0.6rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a class="nav-brand" href="index.html">Nomashae</a>
+    <span class="el-badge" id="el-badge">Earth</span>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn active" href="citizenship.html">Apply</a>
+    <a class="nav-btn" href="track.html">Track</a>
+    <button class="nav-btn" id="dark-btn">Dark</button>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="announce"><span>Applications are reviewed within 7 days · Ensure all information is accurate · You will be notified via email upon a decision &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+<div class="mobile-nav-drawer" id="mobile-drawer">
+  <button class="drawer-close" id="drawer-close">✕</button>
+  <a class="nav-btn" href="index.html">Home</a>
+  <a class="nav-btn" href="track.html">Track Application</a>
+  <button class="nav-btn" id="dark-btn-mobile">Dark</button>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="hero-icon"><i class="fa-solid fa-scroll"></i></div>
+  <span class="hero-eyebrow">Ministry of Internal Affairs</span>
+  <h1 class="hero-title">Citizenship Application</h1>
+  <p class="hero-sub">Complete the form below to formally petition for citizenship within the Republic of Nomashae. All fields marked with <span style="color:var(--accent)">★</span> are required.</p>
+  <span class="hero-badge"><i class="fa-solid fa-shield-halved"></i> Secure · Encrypted · Reviewed by Ministry</span>
+</div>
+
+<div class="page-wrap">
+
+  <!-- SUCCESS SCREEN (hidden until submit) -->
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+    <h2>Application Submitted</h2>
+    <p>Your petition for citizenship has been received by the Ministry of Nomashae. You will be notified at your email address when a decision is made.</p>
+    <p style="font-size:0.78rem;color:var(--ink2)">Your Tracking ID:</p>
+    <div class="tracker-id" id="tracker-id-display" title="Click to copy" onclick="copyTrackId()">———</div>
+    <p class="tracker-hint"><i class="fa-regular fa-copy"></i> Click ID to copy · Save it to track your application</p>
+    <a class="btn-primary" href="track.html"><i class="fa-solid fa-magnifying-glass"></i> Track Application</a>
+    <a class="btn-ghost" href="index.html"><i class="fa-solid fa-house"></i> Back to Home</a>
+  </div>
+
+  <!-- APPLICATION FORM -->
+  <div class="card" id="app-form-wrap">
+    <!-- PROGRESS -->
+    <div class="progress-bar" id="progress-bar">
+      <div class="step-node active" data-step="1">
+        <div class="step-circle">1</div>
+        <div class="step-lbl">Identity</div>
+      </div>
+      <div class="step-node" data-step="2">
+        <div class="step-circle">2</div>
+        <div class="step-lbl">Origin</div>
+      </div>
+      <div class="step-node" data-step="3">
+        <div class="step-circle">3</div>
+        <div class="step-lbl">Statement</div>
+      </div>
+      <div class="step-node" data-step="4">
+        <div class="step-circle">4</div>
+        <div class="step-lbl">Review</div>
+      </div>
+    </div>
+
+    <!-- STEP 1 — IDENTITY -->
+    <div class="form-step active" id="step-1">
+      <div class="form-title"><i class="fa-solid fa-user"></i> Personal Identity</div>
+      <div class="form-subtitle">Your real or chosen name within the world of Nomashae.</div>
+
+      <div class="grid-2">
+        <div class="form-field" id="f-firstname">
+          <label>First Name <span class="req">★</span></label>
+          <input type="text" id="inp-firstname" placeholder="e.g. Aang" autocomplete="given-name"/>
+          <div class="field-err">Please enter your first name.</div>
+        </div>
+        <div class="form-field" id="f-lastname">
+          <label>Last Name / Family Name <span class="opt">(optional)</span></label>
+          <input type="text" id="inp-lastname" placeholder="e.g. Airbender" autocomplete="family-name"/>
+        </div>
+      </div>
+
+      <div class="form-field" id="f-username">
+        <label>Citizen Username <span class="req">★</span></label>
+        <input type="text" id="inp-username" placeholder="e.g. avatar_aang" maxlength="30"/>
+        <div class="field-hint"><i class="fa-solid fa-circle-info"></i> Used on your Citizen ID card. No spaces.</div>
+        <div class="field-err">Username is required (no spaces).</div>
+      </div>
+
+      <div class="form-field" id="f-email">
+        <label>Email Address <span class="req">★</span></label>
+        <input type="email" id="inp-email" placeholder="your@email.com" autocomplete="email"/>
+        <div class="field-hint"><i class="fa-solid fa-circle-info"></i> Used to notify you of your application decision. Never shared publicly.</div>
+        <div class="field-err">A valid email address is required.</div>
+      </div>
+
+      <div class="form-field">
+        <label>Date of Birth <span class="opt">(optional)</span></label>
+        <input type="date" id="inp-dob"/>
+        <div class="field-hint"><i class="fa-solid fa-circle-info"></i> Used for identity verification only.</div>
+      </div>
+
+      <div class="step-nav">
+        <span></span>
+        <button class="btn-primary" onclick="nextStep(1)">Next: Origin <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- STEP 2 — REGION / ORIGIN -->
+    <div class="form-step" id="step-2">
+      <div class="form-title"><i class="fa-solid fa-earth-americas"></i> Nation & Region of Origin</div>
+      <div class="form-subtitle">Select the nation and sub-region you wish to be associated with. This will determine your Citizen ID colour palette.</div>
+
+      <div class="notice" style="margin-bottom:1.5rem">
+        <i class="fa-solid fa-fire"></i>
+        <p><strong>Choose carefully.</strong> Your region shapes your citizen identity. You may petition to change it after 6 months of citizenship.</p>
+      </div>
+
+      <!-- FIRE NATION -->
+      <div class="nation-header">🔥 Fire Nation</div>
+      <div class="region-grid" id="region-grid">
+        <input class="region-option" type="radio" name="region" id="r-fire-capital" value="Fire Nation Capital">
+        <label class="region-label nation-fire" for="r-fire-capital"><div class="region-dot"></div><div><span class="region-text">Fire Nation Capital</span><span class="region-sub">The Seat of the Firelord</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-fire-north" value="Fire Kingdom — Northern Side">
+        <label class="region-label nation-fire" for="r-fire-north"><div class="region-dot"></div><div><span class="region-text">Northern Fire Kingdom</span><span class="region-sub">Industrial heartland</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-fire-south" value="Fire Kingdom — Southern Shores">
+        <label class="region-label nation-fire" for="r-fire-south"><div class="region-dot"></div><div><span class="region-text">Southern Fire Shores</span><span class="region-sub">Port cities & trade routes</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-fire-colonies" value="Fire Nation Colonies">
+        <label class="region-label nation-fire" for="r-fire-colonies"><div class="region-dot"></div><div><span class="region-text">Fire Nation Colonies</span><span class="region-sub">Outer territories</span></div></label>
+
+        <!-- EARTH KINGDOM -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">🌍 Earth Kingdom</div>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-ba" value="Ba Sing Se">
+        <label class="region-label nation-earth" for="r-earth-ba"><div class="region-dot"></div><div><span class="region-text">Ba Sing Se</span><span class="region-sub">The great walled city</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-inner" value="Earth Kingdom — Inner Circle">
+        <label class="region-label nation-earth" for="r-earth-inner"><div class="region-dot"></div><div><span class="region-text">Inner Earth Circle</span><span class="region-sub">Elite districts of Ba Sing Se</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-lower" value="Earth Kingdom — Lower Ring">
+        <label class="region-label nation-earth" for="r-earth-lower"><div class="region-dot"></div><div><span class="region-text">Lower Ring</span><span class="region-sub">Outer Ba Sing Se settlements</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-omashu" value="Omashu">
+        <label class="region-label nation-earth" for="r-earth-omashu"><div class="region-dot"></div><div><span class="region-text">Omashu</span><span class="region-sub">City of chutes & mountains</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-swamp" value="Foggy Swamp">
+        <label class="region-label nation-earth" for="r-earth-swamp"><div class="region-dot"></div><div><span class="region-text">Foggy Swamp</span><span class="region-sub">Ancient swampbending territory</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-kyoshi" value="Kyoshi Island">
+        <label class="region-label nation-earth" for="r-earth-kyoshi"><div class="region-dot"></div><div><span class="region-text">Kyoshi Island</span><span class="region-sub">Home of the Kyoshi Warriors</span></div></label>
+
+        <!-- WATER TRIBE -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">💧 Water Tribe</div>
+
+        <input class="region-option" type="radio" name="region" id="r-water-north" value="Northern Water Tribe">
+        <label class="region-label nation-water" for="r-water-north"><div class="region-dot"></div><div><span class="region-text">Northern Water Tribe</span><span class="region-sub">Capital of the polar seas</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-water-south" value="Southern Water Tribe">
+        <label class="region-label nation-water" for="r-water-south"><div class="region-dot"></div><div><span class="region-text">Southern Water Tribe</span><span class="region-sub">Resilient southern settlements</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-water-foggy" value="Foggy Seas — Unaffiliated">
+        <label class="region-label nation-water" for="r-water-foggy"><div class="region-dot"></div><div><span class="region-text">Foggy Seas</span><span class="region-sub">Nomadic ocean dwellers</span></div></label>
+
+        <!-- AIR NOMADS -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">🌀 Air Nomads</div>
+
+        <input class="region-option" type="radio" name="region" id="r-air-north" value="Northern Air Temple">
+        <label class="region-label nation-air" for="r-air-north"><div class="region-dot"></div><div><span class="region-text">Northern Air Temple</span><span class="region-sub">Floating mountain sanctuary</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-south" value="Southern Air Temple">
+        <label class="region-label nation-air" for="r-air-south"><div class="region-dot"></div><div><span class="region-text">Southern Air Temple</span><span class="region-sub">Ancient home of the Avatar</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-east" value="Eastern Air Temple">
+        <label class="region-label nation-air" for="r-air-east"><div class="region-dot"></div><div><span class="region-text">Eastern Air Temple</span><span class="region-sub">Home of the sky bison herds</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-west" value="Western Air Temple">
+        <label class="region-label nation-air" for="r-air-west"><div class="region-dot"></div><div><span class="region-text">Western Air Temple</span><span class="region-sub">Upside-down cliffside temple</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-sky" value="Sky Nomad — Unaffiliated">
+        <label class="region-label nation-air" for="r-air-sky"><div class="region-dot"></div><div><span class="region-text">Sky Nomad</span><span class="region-sub">No fixed temple affiliation</span></div></label>
+
+        <!-- NEUTRAL / SPECIAL -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">⚖️ Special / Neutral Territories</div>
+
+        <input class="region-option" type="radio" name="region" id="r-special-republic" value="Republic City">
+        <label class="region-label" for="r-special-republic" style="border-color:color-mix(in srgb,#888 30%,transparent)"><div class="region-dot" style="background:linear-gradient(135deg,#aaa,#666);border:none"></div><div><span class="region-text">Republic City</span><span class="region-sub">Multi-nation metropolis</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-special-spirit" value="Spirit World Aligned">
+        <label class="region-label" for="r-special-spirit" style="border-color:color-mix(in srgb,#888 30%,transparent)"><div class="region-dot" style="background:linear-gradient(135deg,#9a80d0,#6a50a0);border:none"></div><div><span class="region-text">Spirit World Aligned</span><span class="region-sub">Connected to the spirit realm</span></div></label>
+      </div>
+      <div class="field-err" id="region-err" style="display:none;margin-top:0.5rem">Please select a region.</div>
+
+      <div class="step-nav" style="margin-top:1.5rem">
+        <button class="btn-ghost" onclick="prevStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn-primary" onclick="nextStep(2)">Next: Statement <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- STEP 3 — STATEMENT -->
+    <div class="form-step" id="step-3">
+      <div class="form-title"><i class="fa-solid fa-feather"></i> Personal Statement</div>
+      <div class="form-subtitle">Tell the Ministry why you wish to become a citizen of Nomashae.</div>
+
+      <div class="form-field" id="f-statement">
+        <label>Statement of Intent <span class="req">★</span></label>
+        <textarea id="inp-statement" placeholder="Describe your connection to Nomashae, your chosen nation, and what citizenship means to you…" rows="6"></textarea>
+        <div class="field-hint"><i class="fa-solid fa-circle-info"></i> Minimum 30 characters. Be genuine — this is read by the Ministry.</div>
+        <div class="field-err">Please write a statement of at least 30 characters.</div>
+      </div>
+
+      <div class="form-field" id="f-skills">
+        <label>Special Skills or Bending <span class="opt">(optional)</span></label>
+        <input type="text" id="inp-skills" placeholder="e.g. Firebending, Healing, Swordsmanship, Inventor…"/>
+        <div class="field-hint"><i class="fa-solid fa-circle-info"></i> Any abilities, trades, or talents you bring to Nomashae.</div>
+      </div>
+
+      <div class="form-field">
+        <label>How did you hear about Nomashae? <span class="opt">(optional)</span></label>
+        <select id="inp-source">
+          <option value="">— Select —</option>
+          <option>Word of mouth / friend</option>
+          <option>Social media</option>
+          <option>Search engine</option>
+          <option>Official announcement</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-ghost" onclick="prevStep(3)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn-primary" onclick="nextStep(3)">Next: Review <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- STEP 4 — REVIEW -->
+    <div class="form-step" id="step-4">
+      <div class="form-title"><i class="fa-solid fa-clipboard-check"></i> Review & Submit</div>
+      <div class="form-subtitle">Confirm your details before submitting your petition to the Ministry.</div>
+
+      <div id="review-block" style="display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.5rem"></div>
+
+      <div class="notice" style="margin-bottom:1.5rem">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <p><strong>By submitting, you affirm</strong> that all information provided is truthful and that you accept the laws and customs of Nomashae upon approval of your citizenship.</p>
+      </div>
+
+      <div class="form-field">
+        <label style="gap:0.6rem;cursor:pointer">
+          <input type="checkbox" id="chk-agree" style="width:auto;accent-color:var(--accent)"/>
+          I agree to the Laws of Nomashae and confirm the above information is accurate. <span class="req">★</span>
+        </label>
+        <div class="field-err" id="agree-err">You must agree before submitting.</div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-ghost" onclick="prevStep(4)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn-primary" id="submit-btn" onclick="submitApplication()">
+          <i class="fa-solid fa-paper-plane"></i> Submit Application
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer><p>© 2026 Nomashae · Ministry of Internal Affairs</p></footer>
+<div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-msg"></span></div>
+<button id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-angles-up" style="color:var(--ink)"></i></button>
+
+<!-- FIREBASE -->
+<script src="firebase-config.js"></script>
+<script type="module">
+  import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const app = initializeApp(FIREBASE_CONFIG);
+  const db  = getFirestore(app);
+
+  window._db = db;
+  window._firestoreAdd = addDoc;
+  window._firestoreCol = collection;
+  window._serverTimestamp = serverTimestamp;
+</script>
+
+<script>
+  /* ── STEP LOGIC ── */
+  let currentStep = 1;
+
+  function showStep(n) {
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    document.querySelectorAll('.step-node').forEach(nd => {
+      const s = parseInt(nd.dataset.step);
+      nd.classList.toggle('active', s === n);
+      nd.classList.toggle('done',   s < n);
+    });
+    window.scrollTo({top: 0, behavior:'smooth'});
+    currentStep = n;
+  }
+
+  function validate(step) {
+    let ok = true;
+    if (step === 1) {
+      const fn = document.getElementById('inp-firstname').value.trim();
+      const un = document.getElementById('inp-username').value.trim();
+      const em = document.getElementById('inp-email').value.trim();
+      setErr('f-firstname', !fn);
+      setErr('f-username',  !un || /\s/.test(un));
+      setErr('f-email',     !em || !em.includes('@'));
+      ok = fn && un && !(/\s/.test(un)) && em && em.includes('@');
+    }
+    if (step === 2) {
+      const r = document.querySelector('input[name="region"]:checked');
+      document.getElementById('region-err').style.display = r ? 'none' : 'block';
+      ok = !!r;
+    }
+    if (step === 3) {
+      const st = document.getElementById('inp-statement').value.trim();
+      setErr('f-statement', st.length < 30);
+      ok = st.length >= 30;
+    }
+    return ok;
+  }
+
+  function setErr(fieldId, hasErr) {
+    document.getElementById(fieldId).classList.toggle('error', hasErr);
+  }
+
+  function nextStep(from) {
+    if (!validate(from)) return;
+    if (from === 3) buildReview();
+    showStep(from + 1);
+  }
+  function prevStep(from) { showStep(from - 1); }
+
+  function buildReview() {
+    const region = document.querySelector('input[name="region"]:checked')?.value;
+    const rows = [
+      ['First Name',  document.getElementById('inp-firstname').value],
+      ['Last Name',   document.getElementById('inp-lastname').value   || '—'],
+      ['Username',    document.getElementById('inp-username').value],
+      ['Email',       document.getElementById('inp-email').value],
+      ['Date of Birth', document.getElementById('inp-dob').value || '—'],
+      ['Region',      region],
+      ['Skills',      document.getElementById('inp-skills').value     || '—'],
+      ['Statement',   document.getElementById('inp-statement').value.substring(0,120) + (document.getElementById('inp-statement').value.length > 120 ? '…':'')],
+    ];
+    document.getElementById('review-block').innerHTML = rows.map(([k,v]) => `
+      <div style="display:flex;gap:0.8rem;align-items:flex-start;padding:0.65rem 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink2);min-width:110px;padding-top:0.15rem">${k}</span>
+        <span style="font-size:0.88rem;color:var(--ink);font-weight:400">${v}</span>
+      </div>`).join('');
+  }
+
+  /* ── GENERATE UNIQUE CITIZEN ID ── */
+  function genTrackId() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = 'NM-';
+    for (let i=0; i<4; i++) id += chars[Math.floor(Math.random()*chars.length)];
+    id += '-';
+    for (let i=0; i<4; i++) id += chars[Math.floor(Math.random()*chars.length)];
+    return id;
+  }
+
+  /* ── GENERATE SECRET HEX PAIR (citizen SSN — stored only, never shown publicly) ── */
+  function genSecretHexPair() {
+    const rand = () => '#' + Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0').toUpperCase();
+    let a, b;
+    do { a = rand(); b = rand(); } while (a === b);
+    return { hex1: a, hex2: b };
+  }
+
+  /* ── SUBMIT ── */
+  window.submitApplication = async function() {
+    if (!validate(3)) { showStep(3); return; }
+    const agreed = document.getElementById('chk-agree').checked;
+    document.getElementById('agree-err').style.display = agreed ? 'none' : 'block';
+    if (!agreed) return;
+
+    const btn = document.getElementById('submit-btn');
+
+    // Guard: Firebase not loaded yet (offline / config not filled in)
+    if (!window._firestoreAdd || !window._db) {
+      showToast('❌ Not connected to Firebase — fill in firebase-config.js first.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Submitting…';
+
+    // Reset button helper — called in every exit path
+    const resetBtn = () => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Application';
+    };
+
+    try {
+      const trackId = genTrackId();
+      const secret  = genSecretHexPair();
+      const region  = document.querySelector('input[name="region"]:checked')?.value;
+
+      const nation = region?.startsWith('Fire') || region?.includes('Fire')  ? 'fire'
+                   : region?.startsWith('Earth') || ['Ba Sing Se','Omashu','Foggy Swamp','Kyoshi Island','Inner Earth','Lower Ring'].some(x => region?.includes(x)) ? 'earth'
+                   : region?.includes('Water') || region?.includes('Foggy Seas') ? 'water'
+                   : region?.includes('Air') || region?.includes('Sky') ? 'air'
+                   : 'neutral';
+
+      const payload = {
+        trackId,
+        firstname:   document.getElementById('inp-firstname').value.trim(),
+        lastname:    document.getElementById('inp-lastname').value.trim(),
+        username:    document.getElementById('inp-username').value.trim(),
+        email:       document.getElementById('inp-email').value.trim(),
+        dob:         document.getElementById('inp-dob').value,
+        region,
+        nation,
+        statement:   document.getElementById('inp-statement').value.trim(),
+        skills:      document.getElementById('inp-skills').value.trim(),
+        source:      document.getElementById('inp-source').value,
+        status:      'pending',
+        secretHex1:  secret.hex1,
+        secretHex2:  secret.hex2,
+        submittedAt: window._serverTimestamp ? window._serverTimestamp() : new Date().toISOString(),
+        adminNote:   ''
+      };
+
+      await window._firestoreAdd(window._firestoreCol(window._db, 'applications'), payload);
+
+      // Success
+      document.getElementById('tracker-id-display').textContent = trackId;
+      window._lastTrackId = trackId;
+      document.getElementById('app-form-wrap').style.display = 'none';
+      document.getElementById('success-screen').classList.add('show');
+      window.scrollTo({top:0,behavior:'smooth'});
+
+    } catch(e) {
+      resetBtn();
+      const msg = e?.code === 'unavailable' || e?.message?.includes('offline')
+        ? '❌ No internet connection — please try again when online.'
+        : '❌ Submission failed — check Firebase config.';
+      showToast(msg);
+      console.error(e);
+    }
+  };
+
+  window.copyTrackId = function() {
+    const id = document.getElementById('tracker-id-display').textContent;
+    navigator.clipboard.writeText(id).catch(()=>{});
+    showToast('Tracking ID copied to clipboard!');
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ── DARK MODE ── */
+  let isDark = false;
+  try { isDark = localStorage.getItem('nmDark') === 'true'; } catch(e){}
+  function applyDark() {
+    document.body.setAttribute('data-theme', isDark ? 'dark':'light');
+    document.querySelectorAll('#dark-btn,#dark-btn-mobile').forEach(b => {
+      b.textContent = isDark ? 'Light':'Dark';
+      b.classList.toggle('active', isDark);
+    });
+  }
+  document.querySelectorAll('#dark-btn,#dark-btn-mobile').forEach(b => b.addEventListener('click', () => {
+    isDark = !isDark; try { localStorage.setItem('nmDark', isDark); }catch(e){} applyDark();
+  }));
+  applyDark();
+
+  /* ── ELEMENT THEMING ── */
+  function getElement() {
+    const h = new Date().getHours();
+    if (h>=6 && h<12) return 'air';
+    if (h>=12 && h<18) return 'water';
+    if (h>=18 && h<22) return 'fire';
+    return 'earth';
+  }
+  const el = getElement();
+  document.body.setAttribute('data-element', el);
+  document.getElementById('el-badge').textContent = {air:'Air',water:'Water',fire:'Fire',earth:'Earth'}[el];
+
+  /* ── HAMBURGER ── */
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-drawer').classList.toggle('open');
+    document.getElementById('hamburger').classList.toggle('open');
+  });
+  document.getElementById('drawer-close').addEventListener('click', () => {
+    document.getElementById('mobile-drawer').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+  });
+
+  /* ── TOP BTN ── */
+  const topBtn = document.getElementById('topBtn');
+  window.addEventListener('scroll', () => topBtn.classList.toggle('visible', window.scrollY > 400));
+</script>
+</body>
+</html>
