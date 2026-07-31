@@ -70,28 +70,17 @@
     .tracker-id:hover { border-color: var(--accent); }
     .tracker-hint { font-size: 0.72rem; color: var(--ink2); display: flex; gap: 0.4rem; align-items: center; }
 
-    /* nation colors */
-    .nation-option { display: none; }
-    .nation-label {
-      display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem 1rem;
-      border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer;
-      transition: all 0.15s; background: var(--bg);
+    /* region nation colors */
+    .nation-fire  .region-dot { background: linear-gradient(135deg,#C4622D,#9e4420); border: none; }
+    .nation-water .region-dot { background: linear-gradient(135deg,#3A8F8F,#2a6e6e); border: none; }
+    .nation-air   .region-dot { background: linear-gradient(135deg,#5B9BBF,#3a7a9e); border: none; }
+    .nation-earth .region-dot { background: linear-gradient(135deg,#4A7C59,#2e5c3e); border: none; }
+
+    .nation-header {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--ink2); padding: 0.5rem 0 0.4rem; margin-top: 0.6rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 0.5rem;
     }
-    .nation-label:hover { border-color: var(--accent); }
-    .nation-option:checked + .nation-label {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 8%, var(--bg));
-    }
-    .nation-dot { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; }
-    .nation-fire  .nation-dot { background: linear-gradient(135deg,#C4622D,#9e4420); }
-    .nation-water .nation-dot { background: linear-gradient(135deg,#3A8F8F,#2a6e6e); }
-    .nation-air   .nation-dot { background: linear-gradient(135deg,#5B9BBF,#3a7a9e); }
-    .nation-earth .nation-dot { background: linear-gradient(135deg,#4A7C59,#2e5c3e); }
-    .nation-neutral .nation-dot { background: linear-gradient(135deg,#aaa,#666); }
-    .nation-name { font-size: 0.92rem; font-weight: 600; color: var(--ink); }
-    .nation-sub  { font-size: 0.72rem; color: var(--ink2); display: block; margin-top: 0.1rem; }
-    .nation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-    @media (max-width: 560px) { .nation-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -150,7 +139,7 @@
       </div>
       <div class="step-node" data-step="2">
         <div class="step-circle">2</div>
-        <div class="step-lbl">Nation</div>
+        <div class="step-lbl">Origin</div>
       </div>
       <div class="step-node" data-step="3">
         <div class="step-circle">3</div>
@@ -190,27 +179,91 @@
 
     <!-- STEP 2 — NATION + STATEMENT -->
     <div class="form-step" id="step-2">
-      <div class="form-title"><i class="fa-solid fa-earth-americas"></i> Nation & Statement</div>
-      <div class="form-subtitle">Choose the nation you feel most connected to, and tell us why you're applying.</div>
+      <div class="form-title"><i class="fa-solid fa-earth-americas"></i> Territory & Statement</div>
+      <div class="form-subtitle">Select the nation and sub-region you wish to be associated with, and tell us why you're applying.</div>
       <p style="font-size:0.75rem;color:var(--ink2);margin-top:-1.2rem;margin-bottom:1.6rem"><i class="fa-solid fa-circle-info"></i> Since no email is collected, track your application status anytime on the Track page using your Tracking ID.</p>
 
-      <div class="nation-grid" id="nation-grid" style="margin-bottom:1.6rem">
-        <input class="nation-option" type="radio" name="nation" id="n-fire" value="Fire Nation">
-        <label class="nation-label nation-fire" for="n-fire"><div class="nation-dot"></div><div><span class="nation-name">🔥 Fire Nation</span><span class="nation-sub">Discipline & ambition</span></div></label>
-
-        <input class="nation-option" type="radio" name="nation" id="n-earth" value="Earth Kingdom">
-        <label class="nation-label nation-earth" for="n-earth"><div class="nation-dot"></div><div><span class="nation-name">🌍 Earth Kingdom</span><span class="nation-sub">Endurance & tradition</span></div></label>
-
-        <input class="nation-option" type="radio" name="nation" id="n-water" value="Water Tribe">
-        <label class="nation-label nation-water" for="n-water"><div class="nation-dot"></div><div><span class="nation-name">💧 Water Tribe</span><span class="nation-sub">Adaptability & community</span></div></label>
-
-        <input class="nation-option" type="radio" name="nation" id="n-air" value="Air Nomads">
-        <label class="nation-label nation-air" for="n-air"><div class="nation-dot"></div><div><span class="nation-name">🌀 Air Nomads</span><span class="nation-sub">Freedom & peace</span></div></label>
-
-        <input class="nation-option" type="radio" name="nation" id="n-neutral" value="Unaffiliated / Republic City">
-        <label class="nation-label nation-neutral" for="n-neutral" style="grid-column:1/-1"><div class="nation-dot"></div><div><span class="nation-name">⚖️ Unaffiliated</span><span class="nation-sub">Republic City & other neutral territories</span></div></label>
+      <div class="notice" style="margin-bottom:1.5rem">
+        <i class="fa-solid fa-fire"></i>
+        <p><strong>Choose carefully.</strong> Your region shapes your citizen identity. You may petition to change it after 6 months of citizenship.</p>
       </div>
-      <div class="field-err" id="nation-err" style="display:none;margin-bottom:1.2rem">Please select a nation.</div>
+
+      <!-- FIRE NATION -->
+      <div class="nation-header">Fire Nation</div>
+      <div class="region-grid" id="region-grid">
+        <input class="region-option" type="radio" name="region" id="r-fire-capital" value="Fire Nation Capital">
+        <label class="region-label nation-fire" for="r-fire-capital"><div class="region-dot"></div><div><span class="region-text">Fire Nation Capital</span><span class="region-sub">The Seat of the Firelord</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-fire-north" value="Fire Kingdom — Northern Side">
+        <label class="region-label nation-fire" for="r-fire-north"><div class="region-dot"></div><div><span class="region-text">Northern Fire Kingdom</span><span class="region-sub">Industrial heartland</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-fire-south" value="Fire Kingdom — Southern Shores">
+        <label class="region-label nation-fire" for="r-fire-south"><div class="region-dot"></div><div><span class="region-text">Southern Fire Shores</span><span class="region-sub">Port cities & trade routes</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-fire-colonies" value="Fire Nation Colonies">
+        <label class="region-label nation-fire" for="r-fire-colonies"><div class="region-dot"></div><div><span class="region-text">Fire Nation Colonies</span><span class="region-sub">Outer territories</span></div></label>
+
+        <!-- EARTH KINGDOM -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">Earth Kingdom</div>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-ba" value="Ba Sing Se">
+        <label class="region-label nation-earth" for="r-earth-ba"><div class="region-dot"></div><div><span class="region-text">Ba Sing Se</span><span class="region-sub">The great walled city</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-inner" value="Earth Kingdom — Inner Circle">
+        <label class="region-label nation-earth" for="r-earth-inner"><div class="region-dot"></div><div><span class="region-text">Inner Earth Circle</span><span class="region-sub">Elite districts of Ba Sing Se</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-lower" value="Earth Kingdom — Lower Ring">
+        <label class="region-label nation-earth" for="r-earth-lower"><div class="region-dot"></div><div><span class="region-text">Lower Ring</span><span class="region-sub">Outer Ba Sing Se settlements</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-omashu" value="Omashu">
+        <label class="region-label nation-earth" for="r-earth-omashu"><div class="region-dot"></div><div><span class="region-text">Omashu</span><span class="region-sub">City of chutes & mountains</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-swamp" value="Foggy Swamp">
+        <label class="region-label nation-earth" for="r-earth-swamp"><div class="region-dot"></div><div><span class="region-text">Foggy Swamp</span><span class="region-sub">Ancient swampbending territory</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-earth-kyoshi" value="Kyoshi Island">
+        <label class="region-label nation-earth" for="r-earth-kyoshi"><div class="region-dot"></div><div><span class="region-text">Kyoshi Island</span><span class="region-sub">Home of the Kyoshi Warriors</span></div></label>
+
+        <!-- WATER TRIBE -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">Water Tribe</div>
+
+        <input class="region-option" type="radio" name="region" id="r-water-north" value="Northern Water Tribe">
+        <label class="region-label nation-water" for="r-water-north"><div class="region-dot"></div><div><span class="region-text">Northern Water Tribe</span><span class="region-sub">Capital of the polar seas</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-water-south" value="Southern Water Tribe">
+        <label class="region-label nation-water" for="r-water-south"><div class="region-dot"></div><div><span class="region-text">Southern Water Tribe</span><span class="region-sub">Resilient southern settlements</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-water-foggy" value="Foggy Seas — Unaffiliated">
+        <label class="region-label nation-water" for="r-water-foggy"><div class="region-dot"></div><div><span class="region-text">Foggy Seas</span><span class="region-sub">Nomadic ocean dwellers</span></div></label>
+
+        <!-- AIR NOMADS -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">Air Nomads</div>
+
+        <input class="region-option" type="radio" name="region" id="r-air-north" value="Northern Air Temple">
+        <label class="region-label nation-air" for="r-air-north"><div class="region-dot"></div><div><span class="region-text">Northern Air Temple</span><span class="region-sub">Floating mountain sanctuary</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-south" value="Southern Air Temple">
+        <label class="region-label nation-air" for="r-air-south"><div class="region-dot"></div><div><span class="region-text">Southern Air Temple</span><span class="region-sub">Ancient home of the Avatar</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-east" value="Eastern Air Temple">
+        <label class="region-label nation-air" for="r-air-east"><div class="region-dot"></div><div><span class="region-text">Eastern Air Temple</span><span class="region-sub">Home of the sky bison herds</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-west" value="Western Air Temple">
+        <label class="region-label nation-air" for="r-air-west"><div class="region-dot"></div><div><span class="region-text">Western Air Temple</span><span class="region-sub">Upside-down cliffside temple</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-air-sky" value="Sky Nomad — Unaffiliated">
+        <label class="region-label nation-air" for="r-air-sky"><div class="region-dot"></div><div><span class="region-text">Sky Nomad</span><span class="region-sub">No fixed temple affiliation</span></div></label>
+
+        <!-- NEUTRAL / SPECIAL -->
+        <div class="nation-header" style="grid-column:1/-1;margin-top:0.8rem">Special / Neutral Territories</div>
+
+        <input class="region-option" type="radio" name="region" id="r-special-republic" value="Republic City">
+        <label class="region-label" for="r-special-republic" style="border-color:color-mix(in srgb,#888 30%,transparent)"><div class="region-dot" style="background:linear-gradient(135deg,#aaa,#666);border:none"></div><div><span class="region-text">Republic City</span><span class="region-sub">Multi-nation metropolis</span></div></label>
+
+        <input class="region-option" type="radio" name="region" id="r-special-spirit" value="Spirit World Aligned">
+        <label class="region-label" for="r-special-spirit" style="border-color:color-mix(in srgb,#888 30%,transparent)"><div class="region-dot" style="background:linear-gradient(135deg,#9a80d0,#6a50a0);border:none"></div><div><span class="region-text">Spirit World Aligned</span><span class="region-sub">Connected to the spirit realm</span></div></label>
+      </div>
+      <div class="field-err" id="region-err" style="display:none;margin-top:0.5rem;margin-bottom:1.5rem">Please select a region.</div>
 
       <div class="form-field" id="f-statement">
         <label>Statement of Intent <span class="req">★</span></label>
@@ -300,8 +353,8 @@
       ok = fn && un && !(/\s/.test(un));
     }
     if (step === 2) {
-      const n = document.querySelector('input[name="nation"]:checked');
-      document.getElementById('nation-err').style.display = n ? 'none' : 'block';
+      const n = document.querySelector('input[name="region"]:checked');
+      document.getElementById('region-err').style.display = n ? 'none' : 'block';
       const st = document.getElementById('inp-statement').value.trim();
       setErr('f-statement', st.length < 30);
       ok = !!n && st.length >= 30;
@@ -321,12 +374,12 @@
   function prevStep(from) { showStep(from - 1); }
 
   function buildReview() {
-    const nation = document.querySelector('input[name="nation"]:checked')?.value;
+    const region = document.querySelector('input[name="region"]:checked')?.value;
     const rows = [
       ['First Name',  document.getElementById('inp-firstname').value],
       ['Last Name',   document.getElementById('inp-lastname').value || '—'],
       ['Username',    document.getElementById('inp-username').value],
-      ['Nation',      nation],
+      ['Region',      region],
       ['Statement',   document.getElementById('inp-statement').value.substring(0,120) + (document.getElementById('inp-statement').value.length > 120 ? '…':'')],
     ];
     document.getElementById('review-block').innerHTML = rows.map(([k,v]) => `
@@ -354,13 +407,14 @@
     return { hex1: a, hex2: b };
   }
 
-  const NATION_KEY = {
-    'Fire Nation': 'fire',
-    'Earth Kingdom': 'earth',
-    'Water Tribe': 'water',
-    'Air Nomads': 'air',
-    'Unaffiliated / Republic City': 'neutral'
-  };
+  function deriveNationKey(region) {
+    if (!region) return 'neutral';
+    if (region.startsWith('Fire') || region.includes('Fire')) return 'fire';
+    if (region.startsWith('Earth') || ['Ba Sing Se','Omashu','Foggy Swamp','Kyoshi Island','Inner Earth','Lower Ring'].some(x => region.includes(x))) return 'earth';
+    if (region.includes('Water') || region.includes('Foggy Seas')) return 'water';
+    if (region.includes('Air') || region.includes('Sky')) return 'air';
+    return 'neutral';
+  }
 
   /* ── SUBMIT ── */
   window.submitApplication = async function() {
@@ -389,15 +443,15 @@
     try {
       const trackId = genTrackId();
       const secret  = genSecretHexPair();
-      const nation  = document.querySelector('input[name="nation"]:checked')?.value;
+      const region  = document.querySelector('input[name="region"]:checked')?.value;
 
       const payload = {
         trackId,
         firstname:   document.getElementById('inp-firstname').value.trim(),
         lastname:    document.getElementById('inp-lastname').value.trim(),
         username:    document.getElementById('inp-username').value.trim(),
-        nation,
-        nationKey:   NATION_KEY[nation] || 'neutral',
+        region,
+        nationKey:   deriveNationKey(region),
         statement:   document.getElementById('inp-statement').value.trim(),
         status:      'pending',
         secretHex1:  secret.hex1,
