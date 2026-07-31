@@ -109,7 +109,7 @@
     <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
   </div>
 </nav>
-<div class="announce"><span>Applications are reviewed within 7 days · Ensure all information is accurate · You will be notified via email upon a decision &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
+<div class="announce"><span>Applications are reviewed within 7 days · Ensure all information is accurate · Track your status anytime with your Tracking ID &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
 <div class="mobile-nav-drawer" id="mobile-drawer">
   <button class="drawer-close" id="drawer-close">✕</button>
   <a class="nav-btn" href="index.html">Home</a>
@@ -132,7 +132,7 @@
   <div class="success-screen" id="success-screen">
     <div class="success-icon"><i class="fa-solid fa-check"></i></div>
     <h2>Application Submitted</h2>
-    <p>Your petition for citizenship has been received by the Ministry of Nomashae. You will be notified at your email address when a decision is made.</p>
+    <p>Your petition for citizenship has been received by the Ministry of Nomashae. Save your Tracking ID below to check your status anytime.</p>
     <p style="font-size:0.78rem;color:var(--ink2)">Your Tracking ID:</p>
     <div class="tracker-id" id="tracker-id-display" title="Click to copy" onclick="copyTrackId()">———</div>
     <p class="tracker-hint"><i class="fa-regular fa-copy"></i> Click ID to copy · Save it to track your application</p>
@@ -182,13 +182,6 @@
         <div class="field-err">Username is required (no spaces).</div>
       </div>
 
-      <div class="form-field" id="f-email">
-        <label>Email Address <span class="req">★</span></label>
-        <input type="email" id="inp-email" placeholder="your@email.com" autocomplete="email"/>
-        <div class="field-hint"><i class="fa-solid fa-circle-info"></i> Used to notify you of your application decision. Never shared publicly.</div>
-        <div class="field-err">A valid email address is required.</div>
-      </div>
-
       <div class="step-nav">
         <span></span>
         <button class="btn-primary" onclick="nextStep(1)">Next: Nation <i class="fa-solid fa-arrow-right"></i></button>
@@ -199,6 +192,7 @@
     <div class="form-step" id="step-2">
       <div class="form-title"><i class="fa-solid fa-earth-americas"></i> Nation & Statement</div>
       <div class="form-subtitle">Choose the nation you feel most connected to, and tell us why you're applying.</div>
+      <p style="font-size:0.75rem;color:var(--ink2);margin-top:-1.2rem;margin-bottom:1.6rem"><i class="fa-solid fa-circle-info"></i> Since no email is collected, track your application status anytime on the Track page using your Tracking ID.</p>
 
       <div class="nation-grid" id="nation-grid" style="margin-bottom:1.6rem">
         <input class="nation-option" type="radio" name="nation" id="n-fire" value="Fire Nation">
@@ -301,11 +295,9 @@
     if (step === 1) {
       const fn = document.getElementById('inp-firstname').value.trim();
       const un = document.getElementById('inp-username').value.trim();
-      const em = document.getElementById('inp-email').value.trim();
       setErr('f-firstname', !fn);
       setErr('f-username',  !un || /\s/.test(un));
-      setErr('f-email',     !em || !em.includes('@'));
-      ok = fn && un && !(/\s/.test(un)) && em && em.includes('@');
+      ok = fn && un && !(/\s/.test(un));
     }
     if (step === 2) {
       const n = document.querySelector('input[name="nation"]:checked');
@@ -334,7 +326,6 @@
       ['First Name',  document.getElementById('inp-firstname').value],
       ['Last Name',   document.getElementById('inp-lastname').value || '—'],
       ['Username',    document.getElementById('inp-username').value],
-      ['Email',       document.getElementById('inp-email').value],
       ['Nation',      nation],
       ['Statement',   document.getElementById('inp-statement').value.substring(0,120) + (document.getElementById('inp-statement').value.length > 120 ? '…':'')],
     ];
@@ -405,7 +396,6 @@
         firstname:   document.getElementById('inp-firstname').value.trim(),
         lastname:    document.getElementById('inp-lastname').value.trim(),
         username:    document.getElementById('inp-username').value.trim(),
-        email:       document.getElementById('inp-email').value.trim(),
         nation,
         nationKey:   NATION_KEY[nation] || 'neutral',
         statement:   document.getElementById('inp-statement').value.trim(),
