@@ -177,10 +177,10 @@
       </div>
     </div>
 
-    <!-- STEP 2 — NATION + STATEMENT -->
+    <!-- STEP 2 — TERRITORY -->
     <div class="form-step" id="step-2">
-      <div class="form-title"><i class="fa-solid fa-earth-americas"></i> Territory & Statement</div>
-      <div class="form-subtitle">Select the nation and sub-region you wish to be associated with, and tell us why you're applying.</div>
+      <div class="form-title"><i class="fa-solid fa-earth-americas"></i> Territory</div>
+      <div class="form-subtitle">Select the nation and sub-region you wish to be associated with.</div>
       <p style="font-size:0.75rem;color:var(--ink2);margin-top:-1.2rem;margin-bottom:1.6rem"><i class="fa-solid fa-circle-info"></i> Since no email is collected, track your application status anytime on the Track page using your Tracking ID.</p>
 
       <div class="notice" style="margin-bottom:1.5rem">
@@ -265,13 +265,6 @@
       </div>
       <div class="field-err" id="region-err" style="display:none;margin-top:0.5rem;margin-bottom:1.5rem">Please select a region.</div>
 
-      <div class="form-field" id="f-statement">
-        <label>Statement of Intent <span class="req">★</span></label>
-        <textarea id="inp-statement" placeholder="A couple of sentences on why you want to join Nomashae…" rows="4"></textarea>
-        <div class="field-hint"><i class="fa-solid fa-circle-info"></i> Minimum 30 characters.</div>
-        <div class="field-err">Please write a statement of at least 30 characters.</div>
-      </div>
-
       <div class="step-nav">
         <button class="btn-ghost" onclick="prevStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
         <button class="btn-primary" onclick="nextStep(2)">Next: Review <i class="fa-solid fa-arrow-right"></i></button>
@@ -355,9 +348,7 @@
     if (step === 2) {
       const n = document.querySelector('input[name="region"]:checked');
       document.getElementById('region-err').style.display = n ? 'none' : 'block';
-      const st = document.getElementById('inp-statement').value.trim();
-      setErr('f-statement', st.length < 30);
-      ok = !!n && st.length >= 30;
+      ok = !!n;
     }
     return ok;
   }
@@ -380,7 +371,6 @@
       ['Last Name',   document.getElementById('inp-lastname').value || '—'],
       ['Username',    document.getElementById('inp-username').value],
       ['Region',      region],
-      ['Statement',   document.getElementById('inp-statement').value.substring(0,120) + (document.getElementById('inp-statement').value.length > 120 ? '…':'')],
     ];
     document.getElementById('review-block').innerHTML = rows.map(([k,v]) => `
       <div style="display:flex;gap:0.8rem;align-items:flex-start;padding:0.65rem 0;border-bottom:1px solid var(--border)">
@@ -452,7 +442,6 @@
         username:    document.getElementById('inp-username').value.trim(),
         region,
         nationKey:   deriveNationKey(region),
-        statement:   document.getElementById('inp-statement').value.trim(),
         status:      'pending',
         secretHex1:  secret.hex1,
         secretHex2:  secret.hex2,
